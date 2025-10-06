@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCA Presentation - Principal Component Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .presentation-container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .slide-content {
+            padding: 3rem;
+            min-height: 600px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .content {
+            color: #374151;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-5 > * + * {
+            margin-top: 1.25rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+
+        .box {
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+        }
+
+        .box-blue { background-color: #eff6ff; }
+        .box-red { background-color: #fef2f2; }
+        .box-green { background-color: #f0fdf4; }
+        .box-purple { background-color: #faf5ff; }
+        .box-yellow { background-color: #fefce8; }
+        .box-orange { background-color: #fff7ed; }
+        .box-blue-100 { background-color: #dbeafe; }
+        .box-green-100 { background-color: #dcfce7; }
+        .box-orange-100 { background-color: #ffedd5; }
+        .box-red-100 { background-color: #fee2e2; }
+        .box-purple-100 { background-color: #f3e8ff; }
+
+        .text-blue-600 { color: #2563eb; }
+        .text-blue-700 { color: #1d4ed8; }
+        .text-blue-800 { color: #1e40af; }
+        .text-red-700 { color: #b91c1c; }
+        .text-red-800 { color: #991b1b; }
+        .text-green-700 { color: #15803d; }
+        .text-green-800 { color: #166534; }
+        .text-purple-700 { color: #7e22ce; }
+        .text-purple-800 { color: #6b21a8; }
+        .text-yellow-700 { color: #a16207; }
+        .text-orange-700 { color: #c2410c; }
+        .text-orange-800 { color: #9a3412; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        ul {
+            list-style: none;
+            margin-left: 1rem;
+        }
+
+        .italic { font-style: italic; }
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+
+        .navigation {
+            background-color: #f3f4f6;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #1d4ed8;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            height: 0.5rem;
+            width: 0.5rem;
+            border-radius: 9999px;
+            background-color: #9ca3af;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background-color: #2563eb;
+            width: 2rem;
+        }
+
+        .slide-counter {
+            text-align: center;
+            padding: 0.5rem;
+            background-color: #fafafa;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-content">
+            <!-- Slide 1 -->
+            <div class="slide" data-slide="0">
+                <h1>Principal Component Analysis (PCA)</h1>
+                <p class="subtitle">A Simple Method to Understand Your Data</p>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="slide hidden" data-slide="1">
+                <h1>What is PCA?</h1>
+                <div class="content space-y-6">
+                    <p class="text-xl">PCA is a technique that helps <span class="font-semibold text-blue-600">simplify complex data</span></p>
+                    
+                    <div class="box box-blue">
+                        <p class="text-lg mb-4">🎯 <span class="font-semibold">Main Goal:</span></p>
+                        <p class="text-lg">Transform many correlated variables into a few independent variables called <span class="font-semibold">"principal components"</span></p>
+                    </div>
+                    
+                    <div class="grid-2 mt-6">
+                        <div class="box box-red">
+                            <p class="font-semibold text-red-700 mb-2">Before PCA</p>
+                            <p>10 variables hard to visualize and understand</p>
+                        </div>
+                        <div class="box box-green">
+                            <p class="font-semibold text-green-700 mb-2">After PCA</p>
+                            <p>2-3 components that summarize the essentials</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="slide hidden" data-slide="2">
+                <h1>How Does It Work? (Simplified)</h1>
+                <div class="content space-y-5">
+                    <div class="box box-purple">
+                        <p class="font-semibold text-purple-700 mb-3">Step 1: Standardization</p>
+                        <p>Put all variables on the same scale (mean = 0, standard deviation = 1)</p>
+                    </div>
+                    
+                    <div class="box box-blue">
+                        <p class="font-semibold text-blue-700 mb-3">Step 2: Finding Directions</p>
+                        <p>Search for directions where data varies the most</p>
+                        <p class="text-sm mt-2 italic">Like finding the best camera angle for a photo</p>
+                    </div>
+                    
+                    <div class="box box-green">
+                        <p class="font-semibold text-green-700 mb-3">Step 3: Creating Components</p>
+                        <p>Each component is a combination of original variables</p>
+                        <p class="text-sm mt-2">PC1 = 0.3×Var1 + 0.5×Var2 + 0.2×Var3 + ...</p>
+                    </div>
+                    
+                    <div class="box box-yellow">
+                        <p class="font-semibold text-yellow-700 mb-3">Step 4: Selection</p>
+                        <p>Keep only components that explain the most variance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="slide hidden" data-slide="3">
+                <h1>The Individuals Plot</h1>
+                <div class="content space-y-5">
+                    <p class="text-lg font-semibold text-gray-700">Projection of observations on the first 2 principal components</p>
+                    
+                    <div class="box box-blue">
+                        <p class="font-semibold text-blue-700 mb-3">📊 What We See:</p>
+                        <ul class="space-y-2">
+                            <li>• Each point = one observation (an individual)</li>
+                            <li>• Close points = similar individuals</li>
+                            <li>• Distant points = different individuals</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="box box-green">
+                        <p class="font-semibold text-green-700 mb-3">🔍 Possible Interpretations:</p>
+                        <ul class="space-y-2">
+                            <li>• <span class="font-semibold">Clusters</span>: Natural groups in the data</li>
+                            <li>• <span class="font-semibold">Outliers</span>: Isolated points = atypical observations</li>
+                            <li>• <span class="font-semibold">Structure</span>: General shape of the distribution</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5 -->
+            <div class="slide hidden" data-slide="4">
+                <h1>The Variables Plot</h1>
+                <div class="content space-y-5">
+                    <p class="text-lg font-semibold text-gray-700">Correlation circle of variables</p>
+                    
+                    <div class="box box-purple">
+                        <p class="font-semibold text-purple-700 mb-3">📊 What We See:</p>
+                        <ul class="space-y-2">
+                            <li>• Each arrow = one original variable</li>
+                            <li>• Longer arrow = better represented</li>
+                            <li>• Position on circle = contribution to components</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="box box-orange">
+                        <p class="font-semibold text-orange-700 mb-3">🔍 Interpretations:</p>
+                        <ul class="space-y-2">
+                            <li>• <span class="font-semibold">Small angle between arrows</span>: Positively correlated variables</li>
+                            <li>• <span class="font-semibold">180° angle</span>: Negatively correlated variables</li>
+                            <li>• <span class="font-semibold">90° angle</span>: Independent variables</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6 -->
+            <div class="slide hidden" data-slide="5">
+                <h1>Practical Applications of PCA</h1>
+                <div class="content space-y-4">
+                    <div class="box box-red">
+                        <p class="font-semibold text-red-700 mb-3">1️⃣ Solve Multicollinearity</p>
+                        <p class="mb-2"><span class="font-semibold">Problem:</span> In linear regression, correlated variables create instability</p>
+                        <p><span class="font-semibold">PCA Solution:</span> Principal components are orthogonal (independent) → no more correlation!</p>
+                    </div>
+                    
+                    <div class="box box-green">
+                        <p class="font-semibold text-green-700 mb-3">2️⃣ Reduce Dimensionality</p>
+                        <p class="mb-2"><span class="font-semibold">Problem:</span> Too many features → high computation time, overfitting</p>
+                        <p><span class="font-semibold">PCA Solution:</span> Go from 10 variables to 3 components while keeping 80% of information</p>
+                    </div>
+                    
+                    <div class="box box-blue">
+                        <p class="font-semibold text-blue-700 mb-3">3️⃣ Improve ML Models</p>
+                        <p>• Fewer features = faster training</p>
+                        <p>• Less noise = better generalization</p>
+                        <p>• Easier visualization in 2D/3D</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7 -->
+            <div class="slide hidden" data-slide="6">
+                <h1>Lab 1: Highly Correlated Data</h1>
+                <div class="content space-y-5">
+                    <div class="box box-blue-100">
+                        <p class="font-semibold text-blue-800 mb-3">🎯 Configuration</p>
+                        <ul class="space-y-2">
+                            <li>• 10 quantitative variables</li>
+                            <li>• Strong correlation between variables</li>
+                            <li>• 200 observations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="box box-green-100">
+                        <p class="font-semibold text-green-800 mb-3">📈 Expected Results</p>
+                        <ul class="space-y-2">
+                            <li>• 3-4 principal components are sufficient</li>
+                            <li>• ~80% of variance explained with few components</li>
+                            <li>• Variables grouped on correlation circle</li>
+                            <li>• Potential clusters on individuals plot</li>
+                        </ul>
+                    </div>
+                    
+                    <p class="text-center text-lg font-semibold text-gray-600 mt-4">
+                        ➡️ Practical demonstration in the notebook
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 8 -->
+            <div class="slide hidden" data-slide="7">
+                <h1>Lab 2: Weakly Correlated Data</h1>
+                <div class="content space-y-5">
+                    <div class="box box-orange-100">
+                        <p class="font-semibold text-orange-800 mb-3">🎯 Configuration</p>
+                        <ul class="space-y-2">
+                            <li>• 10 quantitative variables</li>
+                            <li>• Very weak correlation between variables</li>
+                            <li>• 200 observations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="box box-red-100">
+                        <p class="font-semibold text-red-800 mb-3">📉 Expected Results</p>
+                        <ul class="space-y-2">
+                            <li>• Many components needed</li>
+                            <li>• Variance uniformly distributed</li>
+                            <li>• Variables scattered on circle (90° angles)</li>
+                            <li>• No clear structure in the data</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="box box-purple-100">
+                        <p class="font-semibold text-purple-800 mb-3">💡 Conclusion</p>
+                        <p>PCA is less effective when variables are independent!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9 -->
+            <div class="slide hidden" data-slide="8">
+                <h1>Key Takeaways</h1>
+                <div class="content space-y-4">
+                    <div class="box box-blue">
+                        <p class="font-semibold text-blue-700">✓ PCA simplifies complex data</p>
+                    </div>
+                    
+                    <div class="box box-green">
+                        <p class="font-semibold text-green-700">✓ It works better with correlated variables</p>
+                    </div>
+                    
+                    <div class="box box-purple">
+                        <p class="font-semibold text-purple-700">✓ Plots allow visual data exploration</p>
+                    </div>
+                    
+                    <div class="box box-orange">
+                        <p class="font-semibold text-orange-700">✓ Useful for regression and machine learning</p>
+                    </div>
+                    
+                    <div class="box box-red">
+                        <p class="font-semibold text-red-700">✓ Always check the % of explained variance</p>
+                    </div>
+                    
+                    <p class="text-center text-lg font-bold text-gray-700 mt-8" style="font-size: 2rem;">
+                        Questions?
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="btn" id="prevBtn" onclick="changeSlide(-1)">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Previous
+            </button>
+
+            <div class="progress-dots" id="progressDots"></div>
+
+            <button class="btn" id="nextBtn" onclick="changeSlide(1)">
+                Next
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Slide Counter -->
+        <div class="slide-counter" id="slideCounter"></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        // Initialize
+        function init() {
+            createProgressDots();
+            showSlide(0);
+            updateCounter();
+        }
+
+        // Create progress dots
+        function createProgressDots() {
+            const dotsContainer = document.getElementById('progressDots');
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.dataset.slide = i;
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        // Show specific slide
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            // Hide all slides
+            slides.forEach(slide => slide.classList.add('hidden'));
+            
+            // Show current slide
+            slides[n].classList.remove('hidden');
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                if (index === n) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // Update buttons
+            document.getElementById('prevBtn').disabled = (n === 0);
+            document.getElementById('nextBtn').disabled = (n === totalSlides - 1);
+            
+            updateCounter();
+        }
+
+        // Change slide
+        function changeSlide(direction) {
+            currentSlide += direction;
+            
+            if (currentSlide < 0) {
+                currentSlide = 0;
+            } else if (currentSlide >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            }
+            
+            showSlide(currentSlide);
+        }
+
+        // Update counter
+        function updateCounter() {
+            document.getElementById('slideCounter').textContent = 
+                `Slide ${currentSlide + 1} / ${totalSlides}`;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>
